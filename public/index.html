@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Noticias de Chile</title>
+    <!-- Enlace al archivo de estilos -->
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <h1>Últimas Noticias de Chile</h1>
+      <button id="load-news-btn">Cargar Noticias</button>
+      <div id="news-container"></div>
+    </div>
+
+    <script>
+      async function fetchNews() {
+        try {
+          const response = await fetch("/api/news");
+          const data = await response.json();
+          const newsContainer = document.getElementById("news-container");
+
+          // Limpiar contenedor antes de mostrar las noticias
+          newsContainer.innerHTML = "";
+
+          data.results.forEach((news) => {
+            const newsElement = document.createElement("div");
+            newsElement.classList.add("news-item");
+
+            newsElement.innerHTML = `
+            <div class="news-card">
+              <img src="${news.image_url || "default_image.jpg"}" alt="${
+              news.title
+            }" class="news-image"/>
+              <div class="news-content">
+                <h3>${news.title}</h3>
+                <p>${news.description || "No description available"}</p>
+                <p><small>Publicado en: ${news.pubDate}</small></p>
+                <p><small>Fuente: ${news.source_name}</small></p>
+                <a href="${news.link}" target="_blank">Leer más</a>
+              </div>
+            </div>
+          `;
+
+            newsContainer.appendChild(newsElement);
+          });
+          console.log("Solicitud realizada con éxito a la API de News");
+        } catch (error) {
+          console.error("Error fetching news:", error);
+        }
+      }
+
+      // Inicialmente no cargar noticias hasta que se presione el botón
+      document
+        .getElementById("load-news-btn")
+        .addEventListener("click", fetchNews);
+    </script>
+  </body>
+</html>
